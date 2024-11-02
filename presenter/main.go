@@ -63,7 +63,7 @@ func (p Presenter) MovePlayerDown() {
 	p.moveCursorDown(6)
 }
 
-func (p Presenter) writeX() {
+func (p Presenter) WriteX() {
 	p.moveCursorUp(2)
 	p.moveCursorLeft(4)
 	fmt.Print("**")
@@ -91,12 +91,11 @@ func (p Presenter) writeX() {
 	p.moveCursorDown(1)
 	p.moveCursorLeft(4)
 	fmt.Print("**")
-}
 
-func (p Presenter) cursorInTheFirstSpace() {
-	p.moveCursorLeft(999)
-	p.moveCursorUp(9)
-	p.moveCursorRight(4)
+	// center in the space
+	p.moveCursorUp(2)
+	p.moveCursorRight(2)
+
 }
 
 func (p Presenter) DrawGame() {
@@ -122,7 +121,9 @@ func (p Presenter) DrawGame() {
 	p.writeHorizontalLine(10)
 	p.writeHorizontalLine(10)
 
-	p.cursorInTheFirstSpace()
+	p.moveCursorLeft(999)
+	p.moveCursorUp(9)
+	p.moveCursorRight(4)
 }
 
 func delay() {

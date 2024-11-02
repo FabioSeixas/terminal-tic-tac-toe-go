@@ -83,6 +83,13 @@ func (s *State) moveUp() {
 	s.presenter.MovePlayerUp()
 }
 
+func (s *State) markSpace() {
+	if s.spaces[s.currentSpace] == 0 {
+		s.spaces[s.currentSpace] = 1
+		s.presenter.WriteX()
+	}
+}
+
 func main() {
 	// disable input buffering
 	exec.Command("stty", "-F", "/dev/tty", "cbreak", "min", "1").Run()
@@ -109,7 +116,7 @@ func main() {
 		case 108:
 			state.moveRight()
 		case 10:
-			// writeX()
+			state.markSpace()
 		}
 	}
 }
