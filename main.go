@@ -2,10 +2,9 @@ package main
 
 import (
 	"bufio"
-	"fmt"
+	"gameterminal/presenter"
 	"os"
 	"os/exec"
-	"time"
 )
 
 const maxY = 17
@@ -20,96 +19,68 @@ const (
 )
 
 type State struct {
-	spaces map[int]SpaceValue
+	presenter    presenter.Presenter
+	spaces       map[int]SpaceValue
+	currentSpace int
 }
 
 func (s *State) initState(totalSpaces int) {
 
+	s.currentSpace = 0
 	s.spaces = make(map[int]SpaceValue)
 	for i := 0; i < totalSpaces; i++ {
 		s.spaces[i] = Blank
 	}
 }
 
-func delay() {
-	time.Sleep(time.Millisecond * 1000)
+func (s *State) updateCurrentSpace(n int) {
+	s.currentSpace = n
 }
 
-func initDisplay() {
-	for i := 0; i < maxY; i++ {
-		fmt.Print("\n")
+func (s *State) moveLeft() {
+	switch s.currentSpace {
+
+	case 0:
+		return
+	case 3:
+		return
+	case 6:
+		return
+	default:
+		s.currentSpace--
+		s.presenter.MovePlayerLeft()
 	}
 }
 
-func writeVerticalLine() {
-	for i := 0; i < maxY; i++ {
-		fmt.Print("|")
-		moveCursorDown(1)
-		moveCursorLeft(1)
+func (s *State) moveRight() {
+	switch s.currentSpace {
+
+	case 2:
+		return
+	case 5:
+		return
+	case 8:
+		return
+	default:
+		s.currentSpace++
+		s.presenter.MovePlayerRight()
 	}
 }
 
-func writeHorizontalLine(n int) {
-	for i := 0; i < n; i++ {
-		fmt.Print("-")
+func (s *State) moveDown() {
+	if s.currentSpace > 5 {
+		return
 	}
-	moveCursorRight(1)
+	s.currentSpace += 3
+	s.presenter.MovePlayerDown()
 }
 
-func moveCursorLeft(n int) {
-	fmt.Print("\u001b[", n, "D")
-}
-
-func moveCursorRight(n int) {
-	fmt.Print("\u001b[", n, "C")
-}
-
-func moveCursorUp(n int) {
-	fmt.Print("\u001b[", n, "A")
-}
-
-func moveCursorDown(n int) {
-	fmt.Print("\u001b[", n, "B")
-}
-
-func writeX() {
-	moveCursorUp(2)
-	moveCursorLeft(4)
-	fmt.Print("**")
-	moveCursorDown(1)
-	fmt.Print("**")
-	moveCursorDown(1)
-	fmt.Print("**")
-	moveCursorDown(1)
-	fmt.Print("**")
-	moveCursorDown(1)
-	fmt.Print("**")
-
-	moveCursorUp(4)
-	moveCursorLeft(2)
-	fmt.Print("**")
-	moveCursorDown(1)
-	moveCursorLeft(4)
-	fmt.Print("**")
-	moveCursorDown(1)
-	moveCursorLeft(4)
-	fmt.Print("**")
-	moveCursorDown(1)
-	moveCursorLeft(4)
-	fmt.Print("**")
-	moveCursorDown(1)
-	moveCursorLeft(4)
-	fmt.Print("**")
-
-	centerCursor()
-}
-
-func centerCursor() {
-	moveCursorLeft(999)
-	moveCursorDown(999)
-
-	moveCursorRight(15)
-	moveCursorUp(9)
+func (s *State) moveUp() {
+	if s.currentSpace < 3 {
+		return
+	}
+	s.currentSpace -= 3
+	s.presenter.MovePlayerUp()
 }
 
 func main() {
@@ -120,45 +91,25 @@ func main() {
 
 	input := bufio.NewReader(os.Stdin)
 
-	state := State{}
+	p := presenter.Presenter{MaxY: maxY, SpaceSize: squareSize}
+	state := State{presenter: p}
 	state.initState(6)
 
-	initDisplay()
-	moveCursorUp(maxY)
-	moveCursorRight(10)
-	writeVerticalLine()
-	moveCursorRight(11)
-	moveCursorUp(maxY)
-	writeVerticalLine()
-
-	moveCursorLeft(999)
-	moveCursorUp(maxY)
-	moveCursorDown(squareSize)
-	writeHorizontalLine(10)
-	writeHorizontalLine(10)
-	writeHorizontalLine(10)
-	moveCursorDown(1)
-	moveCursorLeft(999)
-	moveCursorDown(squareSize)
-	writeHorizontalLine(10)
-	writeHorizontalLine(10)
-	writeHorizontalLine(10)
-
-	centerCursor()
+	state.presenter.DrawGame()
 
 	for {
 		switch byte, _ := input.ReadByte(); byte {
 
 		case 104:
-			moveCursorLeft(11)
+			state.moveLeft()
 		case 106:
-			moveCursorDown(6)
+			state.moveDown()
 		case 107:
-			moveCursorUp(6)
+			state.moveUp()
 		case 108:
-			moveCursorRight(11)
+			state.moveRight()
 		case 10:
-			writeX()
+			// writeX()
 		}
 	}
 }
