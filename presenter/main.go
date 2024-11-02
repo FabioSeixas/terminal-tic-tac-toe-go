@@ -83,7 +83,7 @@ func (p Presenter) WriteX() {
 		fmt.Print("**")
 	}
 
-	// center in the space
+	// center in the current space
 	p.moveCursorUp(2)
 	p.moveCursorRight(2)
 
