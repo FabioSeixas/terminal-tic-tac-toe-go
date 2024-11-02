@@ -11,6 +11,26 @@ import (
 const maxY = 17
 const squareSize = 5
 
+type SpaceValue int
+
+const (
+	Blank SpaceValue = iota
+	X
+	O
+)
+
+type State struct {
+	spaces map[int]SpaceValue
+}
+
+func (s *State) initState(totalSpaces int) {
+
+	s.spaces = make(map[int]SpaceValue)
+	for i := 0; i < totalSpaces; i++ {
+		s.spaces[i] = Blank
+	}
+}
+
 func delay() {
 	time.Sleep(time.Millisecond * 1000)
 }
@@ -100,6 +120,9 @@ func main() {
 
 	input := bufio.NewReader(os.Stdin)
 
+	state := State{}
+	state.initState(6)
+
 	initDisplay()
 	moveCursorUp(maxY)
 	moveCursorRight(10)
@@ -120,8 +143,6 @@ func main() {
 	writeHorizontalLine(10)
 	writeHorizontalLine(10)
 	writeHorizontalLine(10)
-
-	// buff := make([]byte, 8)
 
 	centerCursor()
 
