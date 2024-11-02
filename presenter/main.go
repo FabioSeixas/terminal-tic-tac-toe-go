@@ -67,30 +67,21 @@ func (p Presenter) WriteX() {
 	p.moveCursorUp(2)
 	p.moveCursorLeft(4)
 	fmt.Print("**")
-	p.moveCursorDown(1)
-	fmt.Print("**")
-	p.moveCursorDown(1)
-	fmt.Print("**")
-	p.moveCursorDown(1)
-	fmt.Print("**")
-	p.moveCursorDown(1)
-	fmt.Print("**")
+
+	for i := 0; i < 4; i++ {
+		p.moveCursorDown(1)
+		fmt.Print("**")
+	}
 
 	p.moveCursorUp(4)
 	p.moveCursorLeft(2)
 	fmt.Print("**")
-	p.moveCursorDown(1)
-	p.moveCursorLeft(4)
-	fmt.Print("**")
-	p.moveCursorDown(1)
-	p.moveCursorLeft(4)
-	fmt.Print("**")
-	p.moveCursorDown(1)
-	p.moveCursorLeft(4)
-	fmt.Print("**")
-	p.moveCursorDown(1)
-	p.moveCursorLeft(4)
-	fmt.Print("**")
+
+	for i := 0; i < 4; i++ {
+		p.moveCursorDown(1)
+		p.moveCursorLeft(4)
+		fmt.Print("**")
+	}
 
 	// center in the space
 	p.moveCursorUp(2)
@@ -101,26 +92,42 @@ func (p Presenter) WriteX() {
 func (p Presenter) DrawGame() {
 
 	p.initDisplay()
+
+	// position
 	p.moveCursorUp(p.MaxY)
 	p.moveCursorRight(10)
-	p.writeVerticalLine()
-	p.moveCursorRight(11)
-	p.moveCursorUp(p.MaxY)
+
+	// write
 	p.writeVerticalLine()
 
+	// position
+	p.moveCursorRight(11)
+	p.moveCursorUp(p.MaxY)
+
+	// write
+	p.writeVerticalLine()
+
+	// position
 	p.moveCursorLeft(999)
 	p.moveCursorUp(p.MaxY)
 	p.moveCursorDown(p.SpaceSize)
+
+	// write
 	p.writeHorizontalLine(10)
 	p.writeHorizontalLine(10)
 	p.writeHorizontalLine(10)
+
+	// position
 	p.moveCursorDown(1)
 	p.moveCursorLeft(999)
 	p.moveCursorDown(p.SpaceSize)
+
+	// write
 	p.writeHorizontalLine(10)
 	p.writeHorizontalLine(10)
 	p.writeHorizontalLine(10)
 
+	// position
 	p.moveCursorLeft(999)
 	p.moveCursorUp(9)
 	p.moveCursorRight(4)
