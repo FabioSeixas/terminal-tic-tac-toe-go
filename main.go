@@ -105,16 +105,15 @@ func main() {
 		case 108:
 			state.moveRight()
 		case 10:
-
 			state.markSpace()
 		}
 	}
 }
 
 func setup() (*bufio.Reader, *State) {
-	// // disable input buffering
+	// disable input buffering
 	exec.Command("stty", "-F", "/dev/tty", "cbreak", "min", "1").Run()
-	// // do not display entered characters on the screen
+	// do not display entered characters on the screen
 	exec.Command("stty", "-F", "/dev/tty", "-echo").Run()
 
 	file, err := os.OpenFile("/dev/tty", os.O_RDONLY, 0)

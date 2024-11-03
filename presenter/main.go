@@ -27,10 +27,6 @@ func (p Presenter) initDisplay() {
 }
 
 func (p *Presenter) initSpaces() {
-	if p.cols < (MIN_SPACE_COLS*3 + 6) {
-		panic("not enough rows")
-	}
-
 	topRow := (p.rows - (MIN_SPACE_ROWS * 3)) / 2
 	leftMostCol := (p.cols - (MIN_SPACE_COLS * 3)) / 2
 	delay()
