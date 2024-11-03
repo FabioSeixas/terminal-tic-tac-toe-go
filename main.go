@@ -2,13 +2,13 @@ package main
 
 import (
 	"bufio"
+	_ "fmt"
 	"gameterminal/presenter"
 	"os"
 	"os/exec"
 )
 
-const maxY = 17
-const squareSize = 5
+const SPACES_TOTAL = 9
 
 type SpaceValue int
 
@@ -24,11 +24,11 @@ type State struct {
 	currentSpace int
 }
 
-func (s *State) initState(totalSpaces int) {
+func (s *State) initState() {
 
 	s.currentSpace = 0
 	s.spaces = make(map[int]SpaceValue)
-	for i := 0; i < totalSpaces; i++ {
+	for i := 0; i < SPACES_TOTAL; i++ {
 		s.spaces[i] = Blank
 	}
 }
@@ -48,7 +48,7 @@ func (s *State) moveLeft() {
 		return
 	default:
 		s.currentSpace--
-		s.presenter.MovePlayerLeft()
+		s.presenter.MovePlayer(s.currentSpace)
 	}
 }
 
@@ -63,7 +63,7 @@ func (s *State) moveRight() {
 		return
 	default:
 		s.currentSpace++
-		s.presenter.MovePlayerRight()
+		s.presenter.MovePlayer(s.currentSpace)
 	}
 }
 
@@ -72,7 +72,7 @@ func (s *State) moveDown() {
 		return
 	}
 	s.currentSpace += 3
-	s.presenter.MovePlayerDown()
+	s.presenter.MovePlayer(s.currentSpace)
 }
 
 func (s *State) moveUp() {
@@ -80,7 +80,7 @@ func (s *State) moveUp() {
 		return
 	}
 	s.currentSpace -= 3
-	s.presenter.MovePlayerUp()
+	s.presenter.MovePlayer(s.currentSpace)
 }
 
 func (s *State) markSpace() {
@@ -91,18 +91,7 @@ func (s *State) markSpace() {
 }
 
 func main() {
-	// disable input buffering
-	exec.Command("stty", "-F", "/dev/tty", "cbreak", "min", "1").Run()
-	// do not display entered characters on the screen
-	exec.Command("stty", "-F", "/dev/tty", "-echo").Run()
-
-	input := bufio.NewReader(os.Stdin)
-
-	p := presenter.Presenter{MaxY: maxY, SpaceSize: squareSize}
-	state := State{presenter: p}
-	state.initState(6)
-
-	state.presenter.DrawGame()
+	input, state := setup()
 
 	for {
 		switch byte, _ := input.ReadByte(); byte {
@@ -116,7 +105,33 @@ func main() {
 		case 108:
 			state.moveRight()
 		case 10:
+
 			state.markSpace()
 		}
 	}
+}
+
+func setup() (*bufio.Reader, *State) {
+	// // disable input buffering
+	exec.Command("stty", "-F", "/dev/tty", "cbreak", "min", "1").Run()
+	// // do not display entered characters on the screen
+	exec.Command("stty", "-F", "/dev/tty", "-echo").Run()
+
+	file, err := os.OpenFile("/dev/tty", os.O_RDONLY, 0)
+	if err != nil {
+		panic("error while opening device file")
+	}
+
+	cols, rows := get_term_size(file.Fd())
+
+	input := bufio.NewReader(file)
+
+	p := presenter.InitPresenter(cols, rows, SPACES_TOTAL)
+
+	state := State{presenter: p}
+	state.initState()
+
+	state.presenter.DrawGame()
+
+	return input, &state
 }

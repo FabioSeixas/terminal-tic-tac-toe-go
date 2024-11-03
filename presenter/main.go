@@ -5,19 +5,109 @@ import (
 	"time"
 )
 
+const MIN_SPACE_COLS = 10
+const MIN_SPACE_ROWS = 5
+const OFFSET = 1
+
 type Presenter struct {
-	MaxY      int
-	SpaceSize int
+	cols         int
+	rows         int
+	spacesTotal  int
+	spacesCoords map[int][2]int
+}
+
+func InitPresenter(cols int, rows int, spacesTotal int) Presenter {
+	return Presenter{cols, rows, spacesTotal, make(map[int][2]int)}
 }
 
 func (p Presenter) initDisplay() {
-	for i := 0; i < p.MaxY; i++ {
+	for i := 0; i < p.cols; i++ {
 		fmt.Print("\n")
 	}
 }
 
+func (p *Presenter) initSpaces() {
+	if p.cols < (MIN_SPACE_COLS*3 + 6) {
+		panic("not enough rows")
+	}
+
+	topRow := (p.rows - (MIN_SPACE_ROWS * 3)) / 2
+	leftMostCol := (p.cols - (MIN_SPACE_COLS * 3)) / 2
+	delay()
+
+	// first vertical line
+	p.moveCursorDown(topRow)
+	p.moveCursorRight(leftMostCol)
+	p.moveCursorRight(MIN_SPACE_COLS)
+	p.writeVerticalLine()
+	p.writeVerticalLine()
+	p.writeVerticalLine()
+
+	// second vertical line
+	p.moveCursorToReference()
+	p.moveCursorDown(topRow)
+	p.moveCursorRight(leftMostCol)
+	p.moveCursorRight(MIN_SPACE_COLS)
+	p.moveCursorRight(MIN_SPACE_COLS)
+	p.moveCursorRight(OFFSET)
+	p.writeVerticalLine()
+	p.writeVerticalLine()
+	p.writeVerticalLine()
+
+	// first horizontal line
+	p.moveCursorToReference()
+	p.moveCursorDown(topRow)
+	p.moveCursorDown(MIN_SPACE_ROWS)
+	p.moveCursorRight(leftMostCol)
+	p.writeHorizontalLine(MIN_SPACE_COLS)
+	p.moveCursorRight(OFFSET)
+	p.writeHorizontalLine(MIN_SPACE_COLS)
+	p.moveCursorRight(OFFSET)
+	p.writeHorizontalLine(MIN_SPACE_COLS)
+
+	// second horizontal line
+	p.moveCursorToReference()
+	p.moveCursorDown(topRow)
+	p.moveCursorDown(MIN_SPACE_ROWS)
+	p.moveCursorDown(MIN_SPACE_ROWS)
+	p.moveCursorDown(OFFSET)
+	p.moveCursorRight(leftMostCol)
+	p.writeHorizontalLine(MIN_SPACE_COLS)
+	p.moveCursorRight(OFFSET)
+	p.writeHorizontalLine(MIN_SPACE_COLS)
+	p.moveCursorRight(OFFSET)
+	p.writeHorizontalLine(MIN_SPACE_COLS)
+
+	for i := 0; i < p.spacesTotal; i++ {
+		p.moveCursorToReference()
+		p.moveCursorDown(topRow)
+		p.moveCursorRight(leftMostCol)
+
+		if i < 3 {
+			spaceStartX := leftMostCol + (MIN_SPACE_COLS * i) + (i + OFFSET)
+			p.spacesCoords[i] = [2]int{spaceStartX, topRow}
+		} else if i < 6 {
+			factor := i - 3
+			spaceStartX := leftMostCol + (MIN_SPACE_COLS * factor) + (factor + OFFSET)
+			p.spacesCoords[i] = [2]int{spaceStartX, topRow + MIN_SPACE_ROWS + OFFSET}
+		} else {
+			factor := i - 6
+			spaceStartX := leftMostCol + (MIN_SPACE_COLS * factor) + (factor + OFFSET)
+			p.spacesCoords[i] = [2]int{spaceStartX, topRow + (MIN_SPACE_ROWS * 2) + (OFFSET * 2)}
+		}
+	}
+
+	// Leave it here for future debug.
+	// for i := 0; i < p.spacesTotal; i++ {
+	// 	p.moveCursorToReference()
+	// 	p.moveCursorRight(p.spacesCoords[i][0])
+	// 	p.moveCursorDown(p.spacesCoords[i][1])
+	// 	delay()
+	// }
+}
+
 func (p Presenter) writeVerticalLine() {
-	for i := 0; i < p.MaxY; i++ {
+	for i := 0; i < (MIN_SPACE_ROWS + OFFSET); i++ {
 		fmt.Print("|")
 		p.moveCursorDown(1)
 		p.moveCursorLeft(1)
@@ -28,7 +118,6 @@ func (p Presenter) writeHorizontalLine(n int) {
 	for i := 0; i < n; i++ {
 		fmt.Print("-")
 	}
-	p.moveCursorRight(1)
 }
 
 func (p Presenter) moveCursorLeft(n int) {
@@ -45,6 +134,12 @@ func (p Presenter) moveCursorUp(n int) {
 
 func (p Presenter) moveCursorDown(n int) {
 	fmt.Print("\u001b[", n, "B")
+}
+
+func (p Presenter) MovePlayer(newPosition int) {
+	p.moveCursorToReference()
+	p.moveCursorRight(p.spacesCoords[newPosition][0])
+	p.moveCursorDown(p.spacesCoords[newPosition][1])
 }
 
 func (p Presenter) MovePlayerLeft() {
@@ -89,50 +184,23 @@ func (p Presenter) WriteX() {
 
 }
 
+func (p Presenter) moveCursorToReference() {
+	p.moveCursorLeft(999)
+	p.moveCursorUp(999)
+}
+
 func (p Presenter) DrawGame() {
 
+	fmt.Println("cols: ", p.cols)
+	fmt.Println("rows: ", p.rows)
+	fmt.Println(p.spacesTotal)
+	fmt.Println(len(p.spacesCoords))
+
 	p.initDisplay()
-
-	// position
-	p.moveCursorUp(p.MaxY)
-	p.moveCursorRight(10)
-
-	// write
-	p.writeVerticalLine()
-
-	// position
-	p.moveCursorRight(11)
-	p.moveCursorUp(p.MaxY)
-
-	// write
-	p.writeVerticalLine()
-
-	// position
-	p.moveCursorLeft(999)
-	p.moveCursorUp(p.MaxY)
-	p.moveCursorDown(p.SpaceSize)
-
-	// write
-	p.writeHorizontalLine(10)
-	p.writeHorizontalLine(10)
-	p.writeHorizontalLine(10)
-
-	// position
-	p.moveCursorDown(1)
-	p.moveCursorLeft(999)
-	p.moveCursorDown(p.SpaceSize)
-
-	// write
-	p.writeHorizontalLine(10)
-	p.writeHorizontalLine(10)
-	p.writeHorizontalLine(10)
-
-	// position
-	p.moveCursorLeft(999)
-	p.moveCursorUp(9)
-	p.moveCursorRight(4)
+	p.moveCursorToReference()
+	p.initSpaces()
 }
 
 func delay() {
-	time.Sleep(time.Millisecond * 1000)
+	time.Sleep(time.Millisecond * 500)
 }
