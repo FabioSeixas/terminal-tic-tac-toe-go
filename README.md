@@ -5,4 +5,5 @@ A simple Tic Tac Toe game to learn Golang and Terminal with ASCII
 
 Work in Progress
 
-![image](https://github.com/user-attachments/assets/b57c43ca-0bd5-43af-b97c-1d59eb7288b1)
+![image](https://github.com/user-attachments/assets/0820dcf0-f314-4a60-a5aa-aecaa3ac73da)
+
