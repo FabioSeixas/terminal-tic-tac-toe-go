@@ -142,22 +142,6 @@ func (p Presenter) MovePlayer(newPosition int) {
 	p.moveCursorDown(p.spacesCoords[newPosition][1])
 }
 
-func (p Presenter) MovePlayerLeft() {
-	p.moveCursorLeft(11)
-}
-
-func (p Presenter) MovePlayerRight() {
-	p.moveCursorRight(11)
-}
-
-func (p Presenter) MovePlayerUp() {
-	p.moveCursorUp(6)
-}
-
-func (p Presenter) MovePlayerDown() {
-	p.moveCursorDown(6)
-}
-
 func (p Presenter) WriteX() {
 	p.moveCursorUp(2)
 	p.moveCursorLeft(4)
