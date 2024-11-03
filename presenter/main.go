@@ -56,9 +56,9 @@ func (p *Presenter) initSpaces() {
 	p.moveCursorDown(MIN_SPACE_ROWS)
 	p.moveCursorRight(leftMostCol)
 	p.writeHorizontalLine(MIN_SPACE_COLS)
-	p.moveCursorRight(OFFSET)
+	p.writeIntersection()
 	p.writeHorizontalLine(MIN_SPACE_COLS)
-	p.moveCursorRight(OFFSET)
+	p.writeIntersection()
 	p.writeHorizontalLine(MIN_SPACE_COLS)
 
 	// second horizontal line
@@ -69,9 +69,9 @@ func (p *Presenter) initSpaces() {
 	p.moveCursorDown(OFFSET)
 	p.moveCursorRight(leftMostCol)
 	p.writeHorizontalLine(MIN_SPACE_COLS)
-	p.moveCursorRight(OFFSET)
+	p.writeIntersection()
 	p.writeHorizontalLine(MIN_SPACE_COLS)
-	p.moveCursorRight(OFFSET)
+	p.writeIntersection()
 	p.writeHorizontalLine(MIN_SPACE_COLS)
 
 	for i := 0; i < p.spacesTotal; i++ {
@@ -114,6 +114,10 @@ func (p Presenter) writeHorizontalLine(n int) {
 	for i := 0; i < n; i++ {
 		fmt.Print("-")
 	}
+}
+
+func (p Presenter) writeIntersection() {
+	fmt.Print("+")
 }
 
 func (p Presenter) moveCursorLeft(n int) {
