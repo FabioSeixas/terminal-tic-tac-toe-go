@@ -172,14 +172,12 @@ func (p Presenter) moveCursorToReference() {
 
 func (p Presenter) DrawGame() {
 
-	fmt.Println("cols: ", p.cols)
-	fmt.Println("rows: ", p.rows)
-	fmt.Println(p.spacesTotal)
-	fmt.Println(len(p.spacesCoords))
-
 	p.initDisplay()
 	p.moveCursorToReference()
 	p.initSpaces()
+
+	// start in the first position
+	p.MovePlayer(0)
 }
 
 func delay() {
