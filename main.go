@@ -104,6 +104,22 @@ func (s *State) markSpace() {
 	}
 }
 
+func (s *State) isGameEnd() {
+	draw := s.checkForDraw()
+	if draw {
+		s.presenter.AnnounceGameEnd()
+	}
+}
+
+func (s *State) checkForDraw() bool {
+	for _, value := range s.spaces {
+		if value == 0 {
+			return false
+		}
+	}
+	return true
+}
+
 func main() {
 	input, state := setup()
 
@@ -120,7 +136,9 @@ func main() {
 			state.moveRight()
 		case 10:
 			state.markSpace()
+			state.isGameEnd()
 			state.opponentRound()
+			state.isGameEnd()
 		}
 	}
 }

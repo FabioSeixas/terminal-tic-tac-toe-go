@@ -193,6 +193,10 @@ func (p Presenter) WriteO() {
 	fmt.Print("**")
 }
 
+func (p Presenter) AnnounceGameEnd() {
+	fmt.Print("DRAW")
+}
+
 func (p Presenter) moveCursorToReference() {
 	p.moveCursorLeft(999)
 	p.moveCursorUp(999)
