@@ -4,6 +4,7 @@ import (
 	"bufio"
 	_ "fmt"
 	"gameterminal/presenter"
+	"math/rand"
 	"os"
 	"os/exec"
 )
@@ -19,14 +20,14 @@ const (
 )
 
 type State struct {
-	presenter    presenter.Presenter
-	spaces       map[int]SpaceValue
-	currentSpace int
+	presenter          presenter.Presenter
+	spaces             map[int]SpaceValue
+	currentPlayerSpace int
 }
 
 func (s *State) initState() {
 
-	s.currentSpace = 0
+	s.currentPlayerSpace = 0
 	s.spaces = make(map[int]SpaceValue)
 	for i := 0; i < SPACES_TOTAL; i++ {
 		s.spaces[i] = Blank
@@ -34,11 +35,11 @@ func (s *State) initState() {
 }
 
 func (s *State) updateCurrentSpace(n int) {
-	s.currentSpace = n
+	s.currentPlayerSpace = n
 }
 
 func (s *State) moveLeft() {
-	switch s.currentSpace {
+	switch s.currentPlayerSpace {
 
 	case 0:
 		return
@@ -47,13 +48,13 @@ func (s *State) moveLeft() {
 	case 6:
 		return
 	default:
-		s.currentSpace--
-		s.presenter.MovePlayer(s.currentSpace)
+		s.currentPlayerSpace--
+		s.presenter.MovePlayer(s.currentPlayerSpace)
 	}
 }
 
 func (s *State) moveRight() {
-	switch s.currentSpace {
+	switch s.currentPlayerSpace {
 
 	case 2:
 		return
@@ -62,30 +63,43 @@ func (s *State) moveRight() {
 	case 8:
 		return
 	default:
-		s.currentSpace++
-		s.presenter.MovePlayer(s.currentSpace)
+		s.currentPlayerSpace++
+		s.presenter.MovePlayer(s.currentPlayerSpace)
 	}
 }
 
 func (s *State) moveDown() {
-	if s.currentSpace > 5 {
+	if s.currentPlayerSpace > 5 {
 		return
 	}
-	s.currentSpace += 3
-	s.presenter.MovePlayer(s.currentSpace)
+	s.currentPlayerSpace += 3
+	s.presenter.MovePlayer(s.currentPlayerSpace)
 }
 
 func (s *State) moveUp() {
-	if s.currentSpace < 3 {
+	if s.currentPlayerSpace < 3 {
 		return
 	}
-	s.currentSpace -= 3
-	s.presenter.MovePlayer(s.currentSpace)
+	s.currentPlayerSpace -= 3
+	s.presenter.MovePlayer(s.currentPlayerSpace)
+}
+
+func (s *State) opponentRound() {
+	for {
+		opponentSpace := rand.Intn(len(s.spaces))
+		if s.spaces[opponentSpace] == 0 {
+			s.spaces[opponentSpace] = 2
+			s.presenter.MovePlayer(opponentSpace)
+			s.presenter.WriteO()
+			s.presenter.MovePlayer(s.currentPlayerSpace)
+			return
+		}
+	}
 }
 
 func (s *State) markSpace() {
-	if s.spaces[s.currentSpace] == 0 {
-		s.spaces[s.currentSpace] = 1
+	if s.spaces[s.currentPlayerSpace] == 0 {
+		s.spaces[s.currentPlayerSpace] = 1
 		s.presenter.WriteX()
 	}
 }
@@ -106,6 +120,7 @@ func main() {
 			state.moveRight()
 		case 10:
 			state.markSpace()
+			state.opponentRound()
 		}
 	}
 }

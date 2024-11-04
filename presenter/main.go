@@ -165,6 +165,34 @@ func (p Presenter) WriteX() {
 	p.moveCursorLeft(1)
 }
 
+func (p Presenter) WriteO() {
+	p.moveCursorRight(3)
+	fmt.Print("**")
+	p.moveCursorDown(1)
+	fmt.Print("**")
+	p.moveCursorDown(1)
+	p.moveCursorLeft(1)
+	fmt.Print("**")
+	p.moveCursorLeft(3)
+	p.moveCursorDown(1)
+	fmt.Print("**")
+	p.moveCursorLeft(4)
+	p.moveCursorDown(1)
+	fmt.Print("**")
+
+	p.moveCursorLeft(4)
+	p.moveCursorUp(1)
+	fmt.Print("**")
+
+	p.moveCursorLeft(3)
+	p.moveCursorUp(1)
+	fmt.Print("**")
+
+	p.moveCursorLeft(1)
+	p.moveCursorUp(1)
+	fmt.Print("**")
+}
+
 func (p Presenter) moveCursorToReference() {
 	p.moveCursorLeft(999)
 	p.moveCursorUp(999)
