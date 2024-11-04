@@ -143,8 +143,7 @@ func (p Presenter) MovePlayer(newPosition int) {
 }
 
 func (p Presenter) WriteX() {
-	p.moveCursorUp(2)
-	p.moveCursorLeft(4)
+	p.moveCursorLeft(1)
 	fmt.Print("**")
 
 	for i := 0; i < 4; i++ {
@@ -162,10 +161,8 @@ func (p Presenter) WriteX() {
 		fmt.Print("**")
 	}
 
-	// center in the current space
-	p.moveCursorUp(2)
-	p.moveCursorRight(2)
-
+	p.moveCursorUp(4)
+	p.moveCursorLeft(1)
 }
 
 func (p Presenter) moveCursorToReference() {
