@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	_ "fmt"
+	"fmt"
 	"gameterminal/presenter"
 	"math/rand"
 	"os"
@@ -107,17 +107,18 @@ func (s *State) markSpace() bool {
 	return false
 }
 
-func (s *State) isGameEnd() {
+func (s *State) isGameEnd() bool {
 	draw := s.checkForDraw()
 	if draw {
 		s.presenter.AnnounceGameEnd()
-		// finish game
+		return true
 	}
 	winner := s.checkForWinner()
 	if winner != 0 {
 		s.presenter.AnnounceWinner(int(winner))
-		// finish game
+		return true
 	}
+	return false
 
 }
 
@@ -186,9 +187,7 @@ func (s *State) evaluateVerticalPath(i int, firstValue SpaceValue) bool {
 	return true
 }
 
-func main() {
-	input, state := setup()
-
+func gameLoop(input *bufio.Reader, state *State) {
 	for {
 		switch byte, _ := input.ReadByte(); byte {
 
@@ -205,9 +204,43 @@ func main() {
 			if !canGoOn {
 				continue
 			}
-			state.isGameEnd()
+			end := state.isGameEnd()
+			if end {
+				return
+			}
 			state.opponentRound()
-			state.isGameEnd()
+			end = state.isGameEnd()
+			if end {
+				return
+			}
+		}
+	}
+}
+
+func main() {
+	gameRunning := true
+	input, state := setup()
+
+	for {
+		if gameRunning {
+			state.initState()
+			state.presenter.DrawGame()
+
+			gameLoop(input, state)
+		}
+
+		gameRunning = false
+
+		fmt.Print("Play again? (y/n)\n")
+
+		switch byte, _ := input.ReadByte(); byte {
+
+		case 121:
+			gameRunning = true
+
+		case 110:
+			fmt.Print("Bye Bye!")
+			os.Exit(0)
 		}
 	}
 }
@@ -230,9 +263,6 @@ func setup() (*bufio.Reader, *State) {
 	p := presenter.InitPresenter(cols, rows, SPACES_TOTAL)
 
 	state := State{presenter: p}
-	state.initState()
-
-	state.presenter.DrawGame()
 
 	return input, &state
 }
