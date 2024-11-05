@@ -98,11 +98,13 @@ func (s *State) opponentRound() {
 	}
 }
 
-func (s *State) markSpace() {
+func (s *State) markSpace() bool {
 	if s.spaces[s.currentPlayerSpace] == 0 {
 		s.spaces[s.currentPlayerSpace] = 1
 		s.presenter.WriteX()
+		return true
 	}
+	return false
 }
 
 func (s *State) isGameEnd() {
@@ -199,7 +201,10 @@ func main() {
 		case 108:
 			state.moveRight()
 		case 10:
-			state.markSpace()
+			canGoOn := state.markSpace()
+			if !canGoOn {
+				continue
+			}
 			state.isGameEnd()
 			state.opponentRound()
 			state.isGameEnd()
