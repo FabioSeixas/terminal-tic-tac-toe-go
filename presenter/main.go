@@ -197,6 +197,10 @@ func (p Presenter) AnnounceGameEnd() {
 	fmt.Print("DRAW")
 }
 
+func (p Presenter) AnnounceWinner(player int) {
+	fmt.Print("The winner is player ", player, " !!")
+}
+
 func (p Presenter) moveCursorToReference() {
 	p.moveCursorLeft(999)
 	p.moveCursorUp(999)

@@ -10,6 +10,7 @@ import (
 )
 
 const SPACES_TOTAL = 9
+const SPACES_SIDE = 3
 
 type SpaceValue int
 
@@ -108,12 +109,75 @@ func (s *State) isGameEnd() {
 	draw := s.checkForDraw()
 	if draw {
 		s.presenter.AnnounceGameEnd()
+		// finish game
 	}
+	winner := s.checkForWinner()
+	if winner != 0 {
+		s.presenter.AnnounceWinner(int(winner))
+		// finish game
+	}
+
 }
 
 func (s *State) checkForDraw() bool {
 	for _, value := range s.spaces {
 		if value == 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func (s *State) checkForWinner() SpaceValue {
+	/* It is only necessary to iterate starting at spaces 0, 1, 2, 3 and 6 */
+	for i, value := range s.spaces {
+		win := false
+
+		if value == 0 {
+			continue
+		}
+		if i < 3 {
+			win = s.evaluateVerticalPath(i, value)
+			if win {
+				return value
+			}
+		}
+
+		if i%SPACES_SIDE == 0 {
+			win = s.evaluateHorizontalPath(i, value)
+			if win {
+				return value
+			}
+		}
+
+		if i == 0 || i == 3 {
+			// evaluate sloped path
+		}
+
+	}
+	return 0
+}
+
+func (s *State) evaluateHorizontalPath(i int, firstValue SpaceValue) bool {
+	for j := i + 1; j < (i + 3); j++ {
+		value := s.spaces[j]
+		if value == 0 {
+			return false
+		}
+		if value != firstValue {
+			return false
+		}
+	}
+	return true
+}
+
+func (s *State) evaluateVerticalPath(i int, firstValue SpaceValue) bool {
+	for j := i + 3; j < SPACES_TOTAL; j += 3 {
+		value := s.spaces[j]
+		if value == 0 {
+			return false
+		}
+		if value != firstValue {
 			return false
 		}
 	}
