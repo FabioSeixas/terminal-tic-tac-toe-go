@@ -132,13 +132,15 @@ func (s *State) checkForDraw() bool {
 }
 
 func (s *State) checkForWinner() SpaceValue {
-	/* It is only necessary to iterate starting at spaces 0, 1, 2, 3 and 6 */
+	/* It is only necessary to evaluate spaces 0, 1, 2, 3 and 6 */
 	for i, value := range s.spaces {
 		win := false
 
 		if value == 0 {
 			continue
 		}
+
+		// top spaces
 		if i < 3 {
 			win = s.evaluateVerticalPath(i, value)
 			if win {
@@ -146,6 +148,7 @@ func (s *State) checkForWinner() SpaceValue {
 			}
 		}
 
+		// left spaces (0, 3 and 6)
 		if i%SPACES_SIDE == 0 {
 			win = s.evaluateHorizontalPath(i, value)
 			if win {
@@ -153,8 +156,12 @@ func (s *State) checkForWinner() SpaceValue {
 			}
 		}
 
-		if i == 0 || i == 3 {
-			// evaluate sloped path
+		// top left and top right spaces
+		if i == 0 || i == 2 {
+			win = s.evaluateSlopingPaths(i, value)
+			if win {
+				return value
+			}
 		}
 
 	}
@@ -177,6 +184,20 @@ func (s *State) evaluateHorizontalPath(i int, firstValue SpaceValue) bool {
 func (s *State) evaluateVerticalPath(i int, firstValue SpaceValue) bool {
 	for j := i + 3; j < SPACES_TOTAL; j += 3 {
 		value := s.spaces[j]
+		if value == 0 {
+			return false
+		}
+		if value != firstValue {
+			return false
+		}
+	}
+	return true
+}
+
+func (s *State) evaluateSlopingPaths(i int, firstValue SpaceValue) bool {
+	for j := 1; j < 3; j++ {
+		nextSpace := i + (4-i)*j
+		value := s.spaces[nextSpace]
 		if value == 0 {
 			return false
 		}
