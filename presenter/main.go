@@ -29,7 +29,6 @@ func (p Presenter) initDisplay() {
 func (p *Presenter) initSpaces() {
 	topRow := (p.rows - (MIN_SPACE_ROWS * 3)) / 2
 	leftMostCol := (p.cols - (MIN_SPACE_COLS * 3)) / 2
-	delay()
 
 	// first vertical line
 	p.moveCursorDown(topRow)
